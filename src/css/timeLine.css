@@ -1,0 +1,14 @@
+h4 {
+    margin: 2rem;
+}
+
+time {
+    padding: 0 1rem;
+}
+
+.TimeLine {
+    background-color: cadetblue;
+    margin: 1rem auto;
+    text-align: center;
+    padding: 1rem;
+}
