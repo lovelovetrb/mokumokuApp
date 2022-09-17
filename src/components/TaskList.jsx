@@ -1,29 +1,32 @@
 import React, { useState } from 'react'
-import { demo } from '../Db/Data'
 import { db } from '../Auth/firebase'
-import { collection, doc, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { useEffect } from 'react';
+import { auth } from '../Auth/firebase'
 
-const TaskList = () => {
+
+const TaskList = (props) => {
     const [todos, setTodos] = useState([])
+    const list = []
+
+    function clickButton(todo, index) {
+        props.handleClickedEditButton(todo)
+    }
 
     useEffect(() => {
-        const todoData = collection(db, 'todo')
-        onSnapshot(todoData, (snapshot) => {
-            setTodos(snapshot.docs.map((doc) => {
-                return ({ ...doc.data() })
-            }))
+        getData('UID', '==', auth.currentUser.uid)
+    }, [props.todoData])
+
+    async function getData(UID, operator, dataValue) {
+        const todoRef = collection(db, 'todo')
+        const q = query(todoRef, where(UID, operator, dataValue))
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            list.push(doc.data())
         });
-
-    }, [])
-
-    // 修正の挙動を追加
-    function clickButton(index) {
-        console.log(index)
-        const newTodos = [...todos]
-        newTodos.splice(index, 1)
-        setTodos(newTodos)
+        setTodos(list)
     }
+
 
     return (
         <div style={{ width: '50%' }
@@ -36,11 +39,22 @@ const TaskList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {todos.map((todo, index) => {
+                    {todos.sort(
+                        (a, b) => {
+                            const aDate = a.date
+                            const bDate = b.date
+                            if (aDate < bDate) {
+                                return 1;
+                            }
+                            if (aDate > bDate) {
+                                return -1;
+                            }
+                        }
+                    ).map((todo, index) => {
                         const dueDate = todo.date.toDate();
-                        var formattedDate = `${dueDate.getFullYear()}-${dueDate.getMonth() + 1}-${dueDate.getDate()}`.replace(/\n|\r/g, '');
+                        const formattedDate = `${dueDate.getFullYear()}-${dueDate.getMonth() + 1}-${dueDate.getDate()}`.replace(/\n|\r/g, '');
                         return (
-                            <tr key={index}>
+                            <tr key={todo.todoNum}>
                                 <td>
                                     <time>
                                         {formattedDate}
@@ -48,7 +62,7 @@ const TaskList = () => {
                                 </td>
                                 <td>{todo.content}</td>
                                 <td>{todo.progress}</td>
-                                <td><button onClick={() => clickButton(index)}>変更</button></td>
+                                <td><button onClick={() => clickButton(todo, index)}>変更</button></td>
                             </tr>
                         )
                     })}

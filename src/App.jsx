@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import './css/App.css'
 import { Header } from './components/Header'
-import { TaskList } from './components/TaskList'
-import { TaskRegister } from './components/TaskRegister'
 import { auth, provider } from './Auth/firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { TimeLine } from './components/Timeline'
 import { LoginPage } from './components/LoginPage'
+import Footer from './components/Footer'
+import Task from './Task'
+
 
 function App() {
 
@@ -18,14 +19,16 @@ function App() {
       <div className="wrapper">
         {user ? (
           <>
-            <TaskRegister></TaskRegister>
-            <TaskList></TaskList>
+            <Task></Task>
           </>
         ) :
-          <LoginPage></LoginPage>
+          <>
+            <LoginPage></LoginPage>
+          </>
         }
       </div>
       <TimeLine></TimeLine>
+      <Footer></Footer>
     </div>
   )
 }

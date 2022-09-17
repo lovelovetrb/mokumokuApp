@@ -5,7 +5,7 @@ const LoginPageStyle = {
     display: 'flex',
     textAlign: 'center',
     width: '100%',
-    height: '50vh',
+    height: '40vh',
     alignItems: 'center',
     justifyContent: 'center',
     flexFlow: 'column'
